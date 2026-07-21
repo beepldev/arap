@@ -1,0 +1,109 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <title>Team Brother Project Management App</title>
+    <link rel="stylesheet" href="/styles.css">
+  </head>
+  <body class="auth-loading">
+    <section id="login-screen" class="login-screen">
+      <div class="login-shell">
+        <div class="login-panel">
+          <div class="login-brand">
+            <div class="brand-logo"><img id="login-logo" src="https://static.wixstatic.com/media/fcde73_8d267f9ddc364c32bc41b48037e7555b~mv2.png" alt="Brothers Equipment logo"></div>
+            <div>
+              <strong>Team Brother</strong>
+              <span>Project Management Login</span>
+            </div>
+          </div>
+          <h1>Sign in to accounts</h1>
+          <p>Manage customers, projects, third-party accounts, receipts, documents, print reports, and Excel exports.</p>
+          <form id="login-form" class="login-form">
+            <label>User ID
+              <input name="username" autocomplete="username" value="admin" required>
+            </label>
+            <label>Password
+              <input name="password" type="password" autocomplete="current-password" value="admin123" required>
+            </label>
+            <button class="primary" type="submit">Sign In</button>
+            <div id="login-error" class="login-error"></div>
+          </form>
+          <div class="login-hint">
+            Default login: <strong>admin</strong> / <strong>admin123</strong>
+          </div>
+        </div>
+        <div class="login-info">
+          <span class="eyebrow">Pan India commercial kitchen projects</span>
+          <h2>Finance control for manufacturing, trading, vendors, and customer collections.</h2>
+          <div class="login-metrics">
+            <div><strong>SQLite</strong><span>Local database</span></div>
+            <div><strong>Ledger</strong><span>Project wise</span></div>
+            <div><strong>Print</strong><span>Preview reports</span></div>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <aside class="sidebar">
+      <div class="brand">
+        <div class="brand-logo"><img id="app-logo" src="https://static.wixstatic.com/media/fcde73_8d267f9ddc364c32bc41b48037e7555b~mv2.png" alt="Brothers Equipment logo"></div>
+        <div>
+          <strong>Team Brother</strong>
+          <span>Project Management</span>
+        </div>
+      </div>
+      <nav>
+        <button class="nav active" data-view="dashboard">Dashboard</button>
+        <button class="nav" data-view="projects">Projects</button>
+        <button class="nav" data-view="customers">Customers</button>
+        <button class="nav" data-view="third-parties">Third Parties</button>
+        <button class="nav" data-view="receipts">Customer Receipts</button>
+        <button class="nav" data-view="vendor-accounts">Vendor Accounts</button>
+        <button class="nav" data-view="communications">Communication</button>
+        <button class="nav" data-view="documents">Documents</button>
+        <button class="nav" data-view="wip">WIP Progress</button>
+        <button class="nav" data-view="reports">Reports</button>
+        <button class="nav" data-view="settings">Settings</button>
+      </nav>
+    </aside>
+
+    <main>
+      <header class="topbar">
+        <div>
+          <h1 id="page-title" class="app-title">Project Management App</h1>
+          <p id="business-line">Project Management</p>
+        </div>
+        <div class="actions">
+          <button class="icon-button" onclick="printSection(`view-${activeView}`)" title="Print current view">Print</button>
+          <button onclick="downloadReport('/api/reports/projects.csv', 'brothers-project-report.csv')">Export Excel</button>
+          <button onclick="signOut()">Sign Out</button>
+        </div>
+      </header>
+
+      <section id="view-dashboard" class="view active"></section>
+      <section id="view-projects" class="view"></section>
+      <section id="view-customers" class="view"></section>
+      <section id="view-third-parties" class="view"></section>
+      <section id="view-receipts" class="view"></section>
+      <section id="view-vendor-accounts" class="view"></section>
+      <section id="view-communications" class="view"></section>
+      <section id="view-documents" class="view"></section>
+      <section id="view-wip" class="view"></section>
+      <section id="view-reports" class="view"></section>
+      <section id="view-settings" class="view"></section>
+    </main>
+
+    <dialog id="modal">
+      <form method="dialog" class="modal-card">
+        <div class="modal-head">
+          <h2 id="modal-title"></h2>
+          <button type="button" class="close" title="Close" onclick="document.getElementById('modal').close()">x</button>
+        </div>
+        <div id="modal-body"></div>
+      </form>
+    </dialog>
+
+    <script src="/app.js"></script>
+  </body>
+</html>

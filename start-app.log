@@ -1,0 +1,64 @@
+==== Start attempt: Mon Jul 20 13:19:53 IST 2026 ====
+Folder: /Users/sarojktarasia/Documents/Project Management App
+Python: /usr/bin/python3
+Python 3.9.6
+Port: 8789
+
+127.0.0.1 - - [20/Jul/2026 13:19:59] "GET / HTTP/1.1" 200 -
+127.0.0.1 - - [20/Jul/2026 13:19:59] "GET /styles.css HTTP/1.1" 200 -
+127.0.0.1 - - [20/Jul/2026 13:19:59] "GET /app.js HTTP/1.1" 200 -
+127.0.0.1 - - [20/Jul/2026 13:19:59] "GET /api/session HTTP/1.1" 200 -
+127.0.0.1 - - [20/Jul/2026 13:20:01] "POST /api/login HTTP/1.1" 200 -
+127.0.0.1 - - [20/Jul/2026 13:20:01] "GET /api/bootstrap HTTP/1.1" 200 -
+127.0.0.1 - - [20/Jul/2026 13:20:01] "GET /api/dashboard HTTP/1.1" 200 -
+127.0.0.1 - - [20/Jul/2026 13:20:05] "GET / HTTP/1.1" 304 -
+127.0.0.1 - - [20/Jul/2026 13:20:05] "GET /api/session HTTP/1.1" 200 -
+127.0.0.1 - - [20/Jul/2026 13:20:05] "GET /api/bootstrap HTTP/1.1" 200 -
+127.0.0.1 - - [20/Jul/2026 13:20:05] "GET /api/dashboard HTTP/1.1" 200 -
+127.0.0.1 - - [20/Jul/2026 13:20:06] "GET / HTTP/1.1" 304 -
+127.0.0.1 - - [20/Jul/2026 13:20:06] "GET /api/session HTTP/1.1" 200 -
+127.0.0.1 - - [20/Jul/2026 13:20:06] "GET /api/bootstrap HTTP/1.1" 200 -
+127.0.0.1 - - [20/Jul/2026 13:20:06] "GET /api/dashboard HTTP/1.1" 200 -
+127.0.0.1 - - [20/Jul/2026 13:20:06] "GET / HTTP/1.1" 304 -
+127.0.0.1 - - [20/Jul/2026 13:20:06] "GET /api/session HTTP/1.1" 200 -
+127.0.0.1 - - [20/Jul/2026 13:20:06] "GET /api/bootstrap HTTP/1.1" 200 -
+127.0.0.1 - - [20/Jul/2026 13:20:06] "GET /api/dashboard HTTP/1.1" 200 -
+127.0.0.1 - - [20/Jul/2026 13:20:06] "GET / HTTP/1.1" 304 -
+127.0.0.1 - - [20/Jul/2026 13:20:06] "GET /api/session HTTP/1.1" 200 -
+127.0.0.1 - - [20/Jul/2026 13:20:06] "GET /api/bootstrap HTTP/1.1" 200 -
+127.0.0.1 - - [20/Jul/2026 13:20:06] "GET /api/dashboard HTTP/1.1" 200 -
+127.0.0.1 - - [20/Jul/2026 13:20:06] "GET / HTTP/1.1" 304 -
+127.0.0.1 - - [20/Jul/2026 13:20:06] "GET /api/session HTTP/1.1" 200 -
+127.0.0.1 - - [20/Jul/2026 13:20:06] "GET /api/bootstrap HTTP/1.1" 200 -
+127.0.0.1 - - [20/Jul/2026 13:20:06] "GET /api/dashboard HTTP/1.1" 200 -
+127.0.0.1 - - [20/Jul/2026 13:20:06] "GET / HTTP/1.1" 304 -
+127.0.0.1 - - [20/Jul/2026 13:20:06] "GET /api/session HTTP/1.1" 200 -
+127.0.0.1 - - [20/Jul/2026 13:20:06] "GET /api/bootstrap HTTP/1.1" 200 -
+127.0.0.1 - - [20/Jul/2026 13:20:06] "GET /api/dashboard HTTP/1.1" 200 -
+127.0.0.1 - - [20/Jul/2026 13:20:06] "GET / HTTP/1.1" 304 -
+127.0.0.1 - - [20/Jul/2026 13:20:06] "GET /api/session HTTP/1.1" 200 -
+127.0.0.1 - - [20/Jul/2026 13:20:06] "GET /api/bootstrap HTTP/1.1" 200 -
+127.0.0.1 - - [20/Jul/2026 13:20:06] "GET /api/dashboard HTTP/1.1" 200 -
+127.0.0.1 - - [20/Jul/2026 13:20:07] "GET / HTTP/1.1" 304 -
+127.0.0.1 - - [20/Jul/2026 13:20:07] "GET /api/session HTTP/1.1" 200 -
+127.0.0.1 - - [20/Jul/2026 13:20:07] "GET /api/bootstrap HTTP/1.1" 200 -
+127.0.0.1 - - [20/Jul/2026 13:20:07] "GET /api/dashboard HTTP/1.1" 200 -
+127.0.0.1 - - [20/Jul/2026 13:20:20] "GET /api/project-ledger?project_id=2 HTTP/1.1" 200 -
+127.0.0.1 - - [20/Jul/2026 13:21:19] "PUT /api/projects/2 HTTP/1.1" 200 -
+127.0.0.1 - - [20/Jul/2026 13:21:19] "GET /api/bootstrap HTTP/1.1" 200 -
+127.0.0.1 - - [20/Jul/2026 13:21:19] "GET /api/dashboard HTTP/1.1" 200 -
+127.0.0.1 - - [20/Jul/2026 13:21:33] "GET /api/project-ledger?project_id=2 HTTP/1.1" 200 -
+127.0.0.1 - - [20/Jul/2026 13:21:36] "GET /api/dashboard HTTP/1.1" 200 -
+127.0.0.1 - - [20/Jul/2026 13:21:36] "GET /api/bootstrap HTTP/1.1" 200 -
+127.0.0.1 - - [20/Jul/2026 13:21:36] "GET /api/dashboard HTTP/1.1" 200 -
+127.0.0.1 - - [20/Jul/2026 13:22:28] "PUT /api/receipts/2 HTTP/1.1" 200 -
+127.0.0.1 - - [20/Jul/2026 13:22:28] "GET /api/bootstrap HTTP/1.1" 200 -
+127.0.0.1 - - [20/Jul/2026 13:22:28] "GET /api/dashboard HTTP/1.1" 200 -
+127.0.0.1 - - [20/Jul/2026 13:22:37] "GET /api/dashboard HTTP/1.1" 200 -
+127.0.0.1 - - [20/Jul/2026 13:22:47] "GET /api/dashboard HTTP/1.1" 200 -
+127.0.0.1 - - [20/Jul/2026 13:44:59] "GET /api/reports/project-ledger.pdf?project_id=2 HTTP/1.1" 200 -
+127.0.0.1 - - [20/Jul/2026 14:14:31] "GET /data/uploads/company-logo-1784482006-66027828-beepl%20logo.jpeg HTTP/1.1" 304 -
+127.0.0.1 - - [20/Jul/2026 14:14:31] "GET /api/dashboard HTTP/1.1" 200 -
+127.0.0.1 - - [20/Jul/2026 14:18:15] "GET /api/reports/customer-accountability.pdf?customer_id=2 HTTP/1.1" 200 -
+127.0.0.1 - - [20/Jul/2026 14:18:39] "GET /api/dashboard HTTP/1.1" 200 -
+127.0.0.1 - - [20/Jul/2026 14:20:14] "GET /api/dashboard HTTP/1.1" 200 -
