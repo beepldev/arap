@@ -1,64 +1,16 @@
-==== Start attempt: Mon Jul 20 13:19:53 IST 2026 ====
-Folder: /Users/sarojktarasia/Documents/Project Management App
+==== Start attempt: Wed Jul 22 17:15:24 IST 2026 ====
+Folder: /Users/sarojktarasia/Projects/Project Management App
 Python: /usr/bin/python3
 Python 3.9.6
 Port: 8789
 
-127.0.0.1 - - [20/Jul/2026 13:19:59] "GET / HTTP/1.1" 200 -
-127.0.0.1 - - [20/Jul/2026 13:19:59] "GET /styles.css HTTP/1.1" 200 -
-127.0.0.1 - - [20/Jul/2026 13:19:59] "GET /app.js HTTP/1.1" 200 -
-127.0.0.1 - - [20/Jul/2026 13:19:59] "GET /api/session HTTP/1.1" 200 -
-127.0.0.1 - - [20/Jul/2026 13:20:01] "POST /api/login HTTP/1.1" 200 -
-127.0.0.1 - - [20/Jul/2026 13:20:01] "GET /api/bootstrap HTTP/1.1" 200 -
-127.0.0.1 - - [20/Jul/2026 13:20:01] "GET /api/dashboard HTTP/1.1" 200 -
-127.0.0.1 - - [20/Jul/2026 13:20:05] "GET / HTTP/1.1" 304 -
-127.0.0.1 - - [20/Jul/2026 13:20:05] "GET /api/session HTTP/1.1" 200 -
-127.0.0.1 - - [20/Jul/2026 13:20:05] "GET /api/bootstrap HTTP/1.1" 200 -
-127.0.0.1 - - [20/Jul/2026 13:20:05] "GET /api/dashboard HTTP/1.1" 200 -
-127.0.0.1 - - [20/Jul/2026 13:20:06] "GET / HTTP/1.1" 304 -
-127.0.0.1 - - [20/Jul/2026 13:20:06] "GET /api/session HTTP/1.1" 200 -
-127.0.0.1 - - [20/Jul/2026 13:20:06] "GET /api/bootstrap HTTP/1.1" 200 -
-127.0.0.1 - - [20/Jul/2026 13:20:06] "GET /api/dashboard HTTP/1.1" 200 -
-127.0.0.1 - - [20/Jul/2026 13:20:06] "GET / HTTP/1.1" 304 -
-127.0.0.1 - - [20/Jul/2026 13:20:06] "GET /api/session HTTP/1.1" 200 -
-127.0.0.1 - - [20/Jul/2026 13:20:06] "GET /api/bootstrap HTTP/1.1" 200 -
-127.0.0.1 - - [20/Jul/2026 13:20:06] "GET /api/dashboard HTTP/1.1" 200 -
-127.0.0.1 - - [20/Jul/2026 13:20:06] "GET / HTTP/1.1" 304 -
-127.0.0.1 - - [20/Jul/2026 13:20:06] "GET /api/session HTTP/1.1" 200 -
-127.0.0.1 - - [20/Jul/2026 13:20:06] "GET /api/bootstrap HTTP/1.1" 200 -
-127.0.0.1 - - [20/Jul/2026 13:20:06] "GET /api/dashboard HTTP/1.1" 200 -
-127.0.0.1 - - [20/Jul/2026 13:20:06] "GET / HTTP/1.1" 304 -
-127.0.0.1 - - [20/Jul/2026 13:20:06] "GET /api/session HTTP/1.1" 200 -
-127.0.0.1 - - [20/Jul/2026 13:20:06] "GET /api/bootstrap HTTP/1.1" 200 -
-127.0.0.1 - - [20/Jul/2026 13:20:06] "GET /api/dashboard HTTP/1.1" 200 -
-127.0.0.1 - - [20/Jul/2026 13:20:06] "GET / HTTP/1.1" 304 -
-127.0.0.1 - - [20/Jul/2026 13:20:06] "GET /api/session HTTP/1.1" 200 -
-127.0.0.1 - - [20/Jul/2026 13:20:06] "GET /api/bootstrap HTTP/1.1" 200 -
-127.0.0.1 - - [20/Jul/2026 13:20:06] "GET /api/dashboard HTTP/1.1" 200 -
-127.0.0.1 - - [20/Jul/2026 13:20:06] "GET / HTTP/1.1" 304 -
-127.0.0.1 - - [20/Jul/2026 13:20:06] "GET /api/session HTTP/1.1" 200 -
-127.0.0.1 - - [20/Jul/2026 13:20:06] "GET /api/bootstrap HTTP/1.1" 200 -
-127.0.0.1 - - [20/Jul/2026 13:20:06] "GET /api/dashboard HTTP/1.1" 200 -
-127.0.0.1 - - [20/Jul/2026 13:20:07] "GET / HTTP/1.1" 304 -
-127.0.0.1 - - [20/Jul/2026 13:20:07] "GET /api/session HTTP/1.1" 200 -
-127.0.0.1 - - [20/Jul/2026 13:20:07] "GET /api/bootstrap HTTP/1.1" 200 -
-127.0.0.1 - - [20/Jul/2026 13:20:07] "GET /api/dashboard HTTP/1.1" 200 -
-127.0.0.1 - - [20/Jul/2026 13:20:20] "GET /api/project-ledger?project_id=2 HTTP/1.1" 200 -
-127.0.0.1 - - [20/Jul/2026 13:21:19] "PUT /api/projects/2 HTTP/1.1" 200 -
-127.0.0.1 - - [20/Jul/2026 13:21:19] "GET /api/bootstrap HTTP/1.1" 200 -
-127.0.0.1 - - [20/Jul/2026 13:21:19] "GET /api/dashboard HTTP/1.1" 200 -
-127.0.0.1 - - [20/Jul/2026 13:21:33] "GET /api/project-ledger?project_id=2 HTTP/1.1" 200 -
-127.0.0.1 - - [20/Jul/2026 13:21:36] "GET /api/dashboard HTTP/1.1" 200 -
-127.0.0.1 - - [20/Jul/2026 13:21:36] "GET /api/bootstrap HTTP/1.1" 200 -
-127.0.0.1 - - [20/Jul/2026 13:21:36] "GET /api/dashboard HTTP/1.1" 200 -
-127.0.0.1 - - [20/Jul/2026 13:22:28] "PUT /api/receipts/2 HTTP/1.1" 200 -
-127.0.0.1 - - [20/Jul/2026 13:22:28] "GET /api/bootstrap HTTP/1.1" 200 -
-127.0.0.1 - - [20/Jul/2026 13:22:28] "GET /api/dashboard HTTP/1.1" 200 -
-127.0.0.1 - - [20/Jul/2026 13:22:37] "GET /api/dashboard HTTP/1.1" 200 -
-127.0.0.1 - - [20/Jul/2026 13:22:47] "GET /api/dashboard HTTP/1.1" 200 -
-127.0.0.1 - - [20/Jul/2026 13:44:59] "GET /api/reports/project-ledger.pdf?project_id=2 HTTP/1.1" 200 -
-127.0.0.1 - - [20/Jul/2026 14:14:31] "GET /data/uploads/company-logo-1784482006-66027828-beepl%20logo.jpeg HTTP/1.1" 304 -
-127.0.0.1 - - [20/Jul/2026 14:14:31] "GET /api/dashboard HTTP/1.1" 200 -
-127.0.0.1 - - [20/Jul/2026 14:18:15] "GET /api/reports/customer-accountability.pdf?customer_id=2 HTTP/1.1" 200 -
-127.0.0.1 - - [20/Jul/2026 14:18:39] "GET /api/dashboard HTTP/1.1" 200 -
-127.0.0.1 - - [20/Jul/2026 14:20:14] "GET /api/dashboard HTTP/1.1" 200 -
+Traceback (most recent call last):
+  File "/Users/sarojktarasia/Projects/Project Management App/server.py", line 1958, in <module>
+    server = ThreadingHTTPServer(("127.0.0.1", port), Handler)
+  File "/Applications/Xcode.app/Contents/Developer/Library/Frameworks/Python3.framework/Versions/3.9/lib/python3.9/socketserver.py", line 452, in __init__
+    self.server_bind()
+  File "/Applications/Xcode.app/Contents/Developer/Library/Frameworks/Python3.framework/Versions/3.9/lib/python3.9/http/server.py", line 138, in server_bind
+    socketserver.TCPServer.server_bind(self)
+  File "/Applications/Xcode.app/Contents/Developer/Library/Frameworks/Python3.framework/Versions/3.9/lib/python3.9/socketserver.py", line 466, in server_bind
+    self.socket.bind(self.server_address)
+OSError: [Errno 48] Address already in use
