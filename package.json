@@ -1,0 +1,5 @@
+{
+  "dependencies": {
+    "nodeploy": "github:chankruze/nodeploy"
+  }
+}
