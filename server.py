@@ -2036,7 +2036,7 @@ if __name__ == "__main__":
     apply_pending_restore_if_any()
     init_db()
     port = int(os.environ.get("PORT", "8789"))
-    host = os.environ.get("HOST", "127.0.0.1")
+    host = os.environ.get("HOST", "0.0.0.0")
     server = ThreadingHTTPServer((host, port), Handler)
     shown_host = local_ip_address() if host in ("0.0.0.0", "") else host
     print(f"Team Brother Project Management App running at http://{shown_host}:{port}")

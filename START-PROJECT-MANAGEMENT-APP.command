@@ -2,11 +2,15 @@
 cd "$(dirname "$0")"
 LOG_FILE="./start-app.log"
 PORT="${PORT:-8789}"
+LAN_IP=$(python3 -c "import socket; s=socket.socket(socket.AF_INET, socket.SOCK_DGRAM); s.connect(('8.8.8.8', 80)); print(s.getsockname()[0]); s.close()" 2>/dev/null)
 
 clear
 echo "Starting Team Brother Project Management App..."
 echo "Folder: $(pwd)"
 echo "App URL: http://127.0.0.1:${PORT}"
+if [ -n "$LAN_IP" ] && [ "$LAN_IP" != "127.0.0.1" ]; then
+  echo "On this network: http://${LAN_IP}:${PORT}"
+fi
 echo "Login: admin / admin123"
 echo "Log file: ${LOG_FILE}"
 echo ""
