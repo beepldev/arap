@@ -1,0 +1,42 @@
+# Name of your app. Used as the PM2 process name and nginx server block name.
+service: arap
+
+# Git repository to clone/pull on the server. Use an SSH URL the server can reach
+# (e.g. via a deploy key), such as git@github.com:you/my-app.git
+repo: git@github.com:beepldev/arap.git
+
+# branch: main
+
+# The server to deploy to.
+server: 192.168.0.8
+
+ssh:
+  user: root
+  # keys:
+  #   - ~/.ssh/id_ed25519
+  # port: 22
+
+# deploy_path: ~/apps/arap
+
+# runtime: node (default) or python. Python apps run under PM2 in a
+# dedicated venv (created even with no dependencies, for isolation).
+runtime: python
+entry: server.py
+
+# nvm version/alias to install if node is missing on the server (used by nodeploy setup).
+# node_version: 22
+
+# Extra flags appended to the detected start/preview script, e.g. to bind
+# the app to all interfaces instead of just localhost.
+# start_args:
+#   - --host
+
+# Overrides which package.json script nodeploy runs under PM2, if auto-detection
+# picks the wrong one (e.g. a "start" script that isn't meant for a server).
+# start_script: start:lan
+
+# port is exported as $PORT before pm2 starts server.py, which reads it via
+# os.environ.get("PORT", "8789") — see server.py's __main__ block.
+port: 8789
+proxy:
+  host: arap.internal

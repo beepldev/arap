@@ -14,6 +14,7 @@ import sqlite3
 import sys
 import time
 import zipfile
+import socket
 
 
 ROOT = os.path.dirname(os.path.abspath(__file__))
@@ -22,6 +23,8 @@ DB_PATH = os.path.join(DATA_DIR, "brothers_project_accounts.db")
 SESSION_TOKENS = {}
 SESSION_SECONDS = 12 * 60 * 60
 DEFAULT_LOGO_URL = "https://static.wixstatic.com/media/fcde73_8d267f9ddc364c32bc41b48037e7555b~mv2.png"
+PENDING_RESTORE_BIN = os.path.join(ROOT, "backups", "pending-restore.bin")
+PENDING_RESTORE_META = os.path.join(ROOT, "backups", "pending-restore.json")
 BUNDLED_SITE_PACKAGES = "/Users/sarojktarasia/.cache/codex-runtimes/codex-primary-runtime/dependencies/python/lib/python3.12/site-packages"
 if os.path.isdir(BUNDLED_SITE_PACKAGES) and BUNDLED_SITE_PACKAGES not in sys.path:
     sys.path.append(BUNDLED_SITE_PACKAGES)
@@ -32,7 +35,17 @@ def connect():
     conn = sqlite3.connect(DB_PATH)
     conn.row_factory = sqlite3.Row
     conn.execute("PRAGMA foreign_keys = ON")
+    conn.execute("PRAGMA busy_timeout = 8000")
     return conn
+
+
+def local_ip_address():
+    try:
+        with socket.socket(socket.AF_INET, socket.SOCK_DGRAM) as sock:
+            sock.connect(("8.8.8.8", 80))
+            return sock.getsockname()[0]
+    except Exception:
+        return "127.0.0.1"
 
 
 def init_db():
@@ -666,6 +679,8 @@ def backup_filename(prefix="team-brother-backup"):
 
 def create_backup_zip():
     init_db()
+    with connect() as db:
+        db.execute("PRAGMA wal_checkpoint(FULL)")
     output = io.BytesIO()
     with zipfile.ZipFile(output, "w", zipfile.ZIP_DEFLATED) as archive:
         for root, _, files in os.walk(DATA_DIR):
@@ -695,8 +710,29 @@ def restore_backup(payload):
     if "," in file_data:
         file_data = file_data.split(",", 1)[1]
     raw = base64.b64decode(file_data)
+    try:
+        return apply_restore_bytes(raw, file_name)
+    except PermissionError as exc:
+        save_pending_restore(raw, file_name)
+        return {
+            "ok": True,
+            "pending_restart": True,
+            "restored_from": file_name,
+            "message": "Database is being used by another process. Restore is saved and will apply automatically after you close and restart the app.",
+            "error": str(exc),
+        }
+
+
+def apply_restore_bytes(raw, file_name="backup"):
     if not zipfile.is_zipfile(io.BytesIO(raw)):
-        raise ValueError("Backup file must be a .zip file created by this app.")
+        if file_name.lower().endswith(".db") and is_sqlite_database(raw):
+            safety_path = save_safety_backup()
+            os.makedirs(DATA_DIR, exist_ok=True)
+            with open(DB_PATH, "wb") as handle:
+                handle.write(raw)
+            init_db()
+            return {"ok": True, "restored_from": file_name, "safety_backup": os.path.relpath(safety_path, ROOT)}
+        raise ValueError("Backup file must be a Team Brother .zip backup or brothers_project_accounts.db file.")
     safety_path = save_safety_backup()
     restore_root = os.path.join(DATA_DIR, f"_restore_{int(time.time())}_{secrets.token_hex(3)}")
     os.makedirs(restore_root, exist_ok=True)
@@ -706,12 +742,10 @@ def restore_backup(payload):
             if bad_path:
                 raise ValueError("Backup contains unsafe file path.")
             archive.extractall(restore_root)
-        extracted_data = os.path.join(restore_root, "data")
-        db_candidate = os.path.join(extracted_data, "brothers_project_accounts.db")
-        if not os.path.exists(db_candidate):
-            db_candidate = os.path.join(restore_root, "brothers_project_accounts.db")
+        db_candidate = find_restored_database(restore_root)
         if not os.path.exists(db_candidate):
             raise ValueError("Backup does not contain brothers_project_accounts.db.")
+        extracted_data = os.path.dirname(db_candidate)
         os.makedirs(DATA_DIR, exist_ok=True)
         for name in os.listdir(DATA_DIR):
             if name.startswith("_restore_"):
@@ -737,9 +771,55 @@ def restore_backup(payload):
         shutil.rmtree(restore_root, ignore_errors=True)
 
 
+def save_pending_restore(raw, file_name):
+    backups_dir = os.path.dirname(PENDING_RESTORE_BIN)
+    os.makedirs(backups_dir, exist_ok=True)
+    with open(PENDING_RESTORE_BIN, "wb") as handle:
+        handle.write(raw)
+    with open(PENDING_RESTORE_META, "w", encoding="utf-8") as handle:
+        json.dump({"file_name": file_name, "saved_at": time.strftime("%d-%m-%Y %H:%M:%S")}, handle)
+
+
+def apply_pending_restore_if_any():
+    if not os.path.exists(PENDING_RESTORE_BIN):
+        return
+    file_name = "pending-restore"
+    if os.path.exists(PENDING_RESTORE_META):
+        try:
+            with open(PENDING_RESTORE_META, "r", encoding="utf-8") as handle:
+                file_name = json.load(handle).get("file_name") or file_name
+        except Exception:
+            file_name = "pending-restore"
+    with open(PENDING_RESTORE_BIN, "rb") as handle:
+        raw = handle.read()
+    result = apply_restore_bytes(raw, file_name)
+    os.remove(PENDING_RESTORE_BIN)
+    if os.path.exists(PENDING_RESTORE_META):
+        os.remove(PENDING_RESTORE_META)
+    print(f"Applied pending restore: {result.get('restored_from', file_name)}")
+
+
+def find_restored_database(restore_root):
+    direct_candidates = [
+        os.path.join(restore_root, "data", "brothers_project_accounts.db"),
+        os.path.join(restore_root, "brothers_project_accounts.db"),
+    ]
+    for candidate in direct_candidates:
+        if os.path.exists(candidate):
+            return candidate
+    for root, _, files in os.walk(restore_root):
+        if "brothers_project_accounts.db" in files:
+            return os.path.join(root, "brothers_project_accounts.db")
+    return ""
+
+
+def is_sqlite_database(raw):
+    return raw.startswith(b"SQLite format 3\x00")
+
+
 
 def money_text(value):
-    return f"INR {float(value or 0):,.0f}"
+    return f"INR {float(value or 0):,.2f}"
 
 
 def pdf_text(value):
@@ -1953,10 +2033,15 @@ def project_ledger(project_id):
 
 
 if __name__ == "__main__":
+    apply_pending_restore_if_any()
     init_db()
     port = int(os.environ.get("PORT", "8789"))
-    server = ThreadingHTTPServer(("127.0.0.1", port), Handler)
-    print(f"Team Brother Project Management App running at http://127.0.0.1:{port}")
+    host = os.environ.get("HOST", "127.0.0.1")
+    server = ThreadingHTTPServer((host, port), Handler)
+    shown_host = local_ip_address() if host in ("0.0.0.0", "") else host
+    print(f"Team Brother Project Management App running at http://{shown_host}:{port}")
+    if host == "0.0.0.0":
+        print(f"Other PCs on same network can open: http://{shown_host}:{port}")
     print(f"SQLite database: {DB_PATH}")
     try:
         server.serve_forever()

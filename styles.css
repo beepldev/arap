@@ -886,6 +886,17 @@ tr:last-child td {
   border-bottom: 0;
 }
 
+tr.row-closed td,
+tr.row-completed td {
+  background: #ecfdf3;
+  border-bottom-color: #bbf7d0;
+}
+
+tr.row-closed td:first-child,
+tr.row-completed td:first-child {
+  box-shadow: inset 4px 0 0 #16a34a;
+}
+
 .money {
   text-align: right;
   white-space: nowrap;
@@ -900,6 +911,19 @@ tr:last-child td {
   background: var(--blue-soft);
   color: #315c8f;
   font-size: 12px;
+}
+
+.pill-closed,
+.pill-completed {
+  background: #dcfce7;
+  color: #166534;
+  border: 1px solid #86efac;
+  font-weight: 700;
+}
+
+.project-closed-panel {
+  border-color: #86efac;
+  box-shadow: inset 0 0 0 2px #dcfce7;
 }
 
 .bar-list {

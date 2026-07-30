@@ -28,6 +28,62 @@ Open:
 http://127.0.0.1:8789
 ```
 
+## Network Version For Office PCs
+
+Use this when one computer/server will keep the database and all other PCs will access the same app through browser.
+
+### Install On Server Computer
+
+1. Choose one computer as the server. Keep the `Project Management App` folder on that computer only.
+2. Install Python 3 on the server computer from `https://www.python.org/downloads/`.
+3. On Windows server, tick `Add python.exe to PATH` during Python installation.
+4. Copy your latest backup/data into this server folder or restore backup from `Settings`.
+5. Start network mode:
+
+Windows server:
+
+```text
+START-PROJECT-MANAGEMENT-NETWORK-WINDOWS.bat
+```
+
+Mac server:
+
+```text
+START-PROJECT-MANAGEMENT-NETWORK-MAC.command
+```
+
+6. Keep this server window open while users are working.
+7. If Windows Firewall asks permission, click `Allow Access` for `Private Network`.
+
+### Open From Other PCs
+
+1. Connect all PCs to the same office Wi-Fi/LAN.
+2. On the server screen, note the IPv4 address. Example: `192.168.1.10`.
+3. On another PC, open Chrome/Edge.
+4. Type:
+
+```text
+http://SERVER-IP:8789
+```
+
+Example:
+
+```text
+http://192.168.1.10:8789
+```
+
+5. Login with user ID/password.
+
+Other PCs do not need the app folder. They only need a browser. Only the server computer needs Python and the app folder.
+
+### Important Network Rules
+
+- Do not run separate copies on every PC if you want shared live data.
+- Keep one main server copy only.
+- Take backup daily from `Settings > Download Backup`.
+- If the server computer is off, other PCs cannot open the app.
+- If the server IP changes, open the network start file again and use the new IPv4 address.
+
 ## Login
 
 Default user:
@@ -129,7 +185,11 @@ chmod +x START-PROJECT-MANAGEMENT-APP.command
 2. Go to `Settings`.
 3. Use `Download Backup` before copying to another computer.
 4. On the new computer, open `Settings`.
-5. Use `Restore Backup` and select the backup ZIP.
+5. Use `Restore Backup` and select either the Team Brother backup ZIP or `brothers_project_accounts.db`.
 6. Restart the app after restore.
 
 Use full-folder copy when shifting computer permanently. Use backup/restore when you want to move or save data safely.
+
+If the ZIP was made by zipping the full folder on another computer, restore can still find the database even when it is inside an extra folder level such as `Project Management App/data/brothers_project_accounts.db`.
+
+On Windows, if restore says the database is being used by another process, close every open Team Brother app window/server and start the app again. The app saves that restore as pending and applies it automatically during the next start before opening the database.

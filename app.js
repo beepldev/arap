@@ -11,6 +11,7 @@ let projectStatusFilter = "active";
 let paymentFromDate = "";
 let paymentToDate = "";
 let dashboardSelectedProjectId = null;
+let dashboardProjectFilter = "active";
 let ledgerZoom = 100;
 let dashboardProjectSearch = "";
 let currentPdfPreviewUrl = "";
@@ -19,7 +20,8 @@ let currentPdfPreviewFilename = "";
 const money = new Intl.NumberFormat("en-IN", {
   style: "currency",
   currency: "INR",
-  maximumFractionDigits: 0,
+  minimumFractionDigits: 2,
+  maximumFractionDigits: 2,
 });
 
 const paymentModes = ["UPI", "PhonePe", "GPay", "Cheque", "Cash", "Bank Transfer", "NEFT", "RTGS", "IMPS", "Card", "Other"];
@@ -183,7 +185,7 @@ function table(headers, rows, emptyText = "No records yet") {
         <thead><tr>${headers.map((header) => `<th>${esc(header.label)}</th>`).join("")}</tr></thead>
         <tbody>
           ${rows.map((row) => `
-            <tr>
+            <tr class="${rowClass(row)}">
               ${headers.map((header) => `<td class="${header.money ? "money" : ""}">${header.render ? header.render(row) : displayValue(row[header.key])}</td>`).join("")}
             </tr>
           `).join("")}
@@ -191,6 +193,12 @@ function table(headers, rows, emptyText = "No records yet") {
       </table>
     </div>
   `;
+}
+
+function rowClass(row) {
+  if (isClosedStatus(row.status)) return "row-closed";
+  if (String(row.status || "") === "Completed") return "row-completed";
+  return "";
 }
 
 function dateInRange(value, fromDate = paymentFromDate, toDate = paymentToDate) {
@@ -212,7 +220,7 @@ function dateRangeText(fromDate = paymentFromDate, toDate = paymentToDate) {
 }
 
 function isClosedStatus(status) {
-  return ["Closed", "Cancelled"].includes(status);
+  return ["Closed", "Completed", "Cancelled"].includes(status);
 }
 
 function isNotStartedStatus(status) {
@@ -290,12 +298,13 @@ function renderDashboard() {
     const startedProjects = dashboard.finance.filter((item) => isStartedStatus(item.status) && !isClosedStatus(item.status));
     const customerRows = customerCumulativeRows(dashboard.finance);
     const dashboardTerm = dashboardProjectSearch.trim().toLowerCase();
-    const dashboardMatches = dashboard.finance.filter((project) => {
+    const dashboardBaseProjects = dashboardProjectFilter === "closed" ? closedProjects : activeProjects;
+    const dashboardMatches = dashboardBaseProjects.filter((project) => {
       const haystack = `${project.project_no} ${project.name} ${project.customer_name} ${project.status} ${project.project_category || ""}`.toLowerCase();
       const starts = String(project.name || "").toLowerCase().startsWith(dashboardTerm);
       return !dashboardTerm || starts || haystack.includes(dashboardTerm);
     });
-    const selectedFinance = dashboard.finance.find((item) => Number(item.id) === Number(dashboardSelectedProjectId)) || dashboardMatches[0] || dashboard.finance[0];
+    const selectedFinance = dashboardMatches.find((item) => Number(item.id) === Number(dashboardSelectedProjectId)) || dashboardMatches[0] || null;
     if (selectedFinance) dashboardSelectedProjectId = selectedFinance.id;
     el.innerHTML = `
       <div class="dashboard-hero">
@@ -378,7 +387,7 @@ function renderDashboard() {
               ${dashboardMatches.slice(0, 25).map((project) => `<option value="${project.id}" ${Number(project.id) === Number(selectedFinance?.id) ? "selected" : ""}>${esc(project.project_no)} - ${esc(project.name)} | ${esc(project.customer_name)}</option>`).join("")}
             </select>
           </label>
-          <p class="muted">${dashboardMatches.length} matching project(s). Showing maximum 25 in selector. Open Projects for full table.</p>
+          <p class="muted">${dashboardMatches.length} ${dashboardProjectFilter === "closed" ? "closed" : "active"} matching project(s). Showing maximum 25 in selector. Open Projects for full table.</p>
           <div class="actions" style="margin-top:12px">
             <button onclick="activeView='projects'; render()">Open Projects Table</button>
             <button class="primary" onclick="openProjectForm()">New Project</button>
@@ -447,6 +456,7 @@ function setDashboardProjectSearchLive(value) {
 
 function clearDashboardProjectSearch() {
   dashboardProjectSearch = "";
+  dashboardSelectedProjectId = null;
   renderDashboard();
 }
 
@@ -510,15 +520,20 @@ function stat(label, value, tone = "") {
 
 function dashboardStatAction(label) {
   if (label.includes("Closed")) {
+    dashboardProjectFilter = "closed";
+    dashboardSelectedProjectId = null;
     projectStatusFilter = "closed";
-    switchView("projects");
+    renderDashboard();
   } else if (label.includes("Started / WIP")) {
+    dashboardProjectFilter = "active";
     projectStatusFilter = "started";
     switchView("projects");
   } else if (label.includes("Not Started")) {
+    dashboardProjectFilter = "active";
     projectStatusFilter = "not-started";
     switchView("projects");
   } else if (label.includes("Project")) {
+    dashboardProjectFilter = "active";
     projectStatusFilter = label.includes("Active") ? "active" : "all";
     switchView("projects");
   }
@@ -651,14 +666,24 @@ function projectFinanceTable(finance) {
   return table([
     { label: "Project", render: (r) => `<strong>${esc(r.project_no)}</strong><br>${esc(r.name)}<br><span class="muted">${esc(r.project_category || "")}</span>` },
     { label: "Customer", key: "customer_name" },
-    { label: "Status", render: (r) => `<span class="pill">${esc(r.status)}</span><br><span class="muted">${esc(r.charge_type || "")}</span>` },
+    { label: "Status", render: (r) => `${statusPill(r.status)}<br><span class="muted">${esc(r.charge_type || "")}</span>` },
     { label: "Finalised", money: true, render: (r) => rupees(r.finalized_amount) },
     { label: "Received", money: true, render: (r) => rupees(r.received_amount) },
     { label: "Balance", money: true, render: (r) => rupees(r.customer_balance) },
     { label: "3rd Party", money: true, render: (r) => rupees(r.third_party_finalized) },
     { label: "Margin", money: true, render: (r) => rupees(r.gross_margin) },
-    { label: "Action", render: (r) => `<div class="row-actions"><button onclick="selectProject(${r.id})">Select</button><button onclick="openLedger(${r.id}, 'customer')">Customer</button><button onclick="openLedger(${r.id}, 'third-party')">3rd Party</button><button onclick="openLedger(${r.id}, 'combined')">Both</button><button onclick="downloadPdf('/api/reports/project-ledger.pdf?project_id=${r.id}', 'project-ledger-${r.id}.pdf')">PDF</button><button onclick="openProjectForm(${r.id})">Modify</button><button class="danger" onclick="deleteRecord('projects', ${r.id}, 'Delete this project and its linked records?')">Delete</button></div>` },
+    { label: "Action", render: (r) => `<div class="row-actions"><button onclick="selectProject(${r.id})">Select</button><button onclick="openLedger(${r.id}, 'customer')">Customer</button><button onclick="openLedger(${r.id}, 'third-party')">3rd Party</button><button onclick="openLedger(${r.id}, 'combined')">Both</button><button onclick="downloadPdf('/api/reports/project-ledger.pdf?project_id=${r.id}', 'project-ledger-${r.id}.pdf')">PDF</button><button onclick="openProjectForm(${r.id})">Modify</button>${projectStatusActionButton(r)}<button class="danger" onclick="deleteRecord('projects', ${r.id}, 'Delete this project and its linked records?')">Delete</button></div>` },
   ], finance);
+}
+
+function statusPill(status) {
+  const cls = isClosedStatus(status) ? "pill pill-closed" : String(status || "") === "Completed" ? "pill pill-completed" : "pill";
+  return `<span class="${cls}">${esc(status || "")}</span>`;
+}
+
+function projectStatusActionButton(project) {
+  if (isClosedStatus(project.status)) return `<button onclick="setProjectStatus(${project.id}, 'Started')">Reopen</button>`;
+  return `<button onclick="setProjectStatus(${project.id}, 'Closed')">Close</button>`;
 }
 
 function customerCumulativeTable(rows) {
@@ -675,8 +700,8 @@ function customerCumulativeTable(rows) {
 }
 
 function renderProjects() {
-  if (!selectedProjectId && state.projects.length) selectedProjectId = state.projects[0].id;
   const finance = filteredProjectFinance();
+  if (!finance.some((item) => Number(item.id) === Number(selectedProjectId))) selectedProjectId = finance[0]?.id || null;
   const cumulative = customerCumulativeRows(finance);
   const selected = state.projects.find((item) => Number(item.id) === Number(selectedProjectId));
   const selectedFinance = state.projectFinance.find((item) => Number(item.id) === Number(selectedProjectId));
@@ -745,12 +770,13 @@ function renderSelectedProject(project, finance) {
   const thirdPartyAdvance = projectThirdParties.reduce((sum, item) => sum + Number(item.advance_amount || 0), 0);
   const thirdPartyPayable = Number(finance?.third_party_finalized || 0) - thirdPartyAdvance - thirdPartyPaid;
   const thirdPartyScheduleIds = new Set(projectThirdParties.map((item) => Number(item.id)));
+  const thirdPartyPayments = state.thirdPartyPayments.filter((item) => thirdPartyScheduleIds.has(Number(item.project_third_party_id)));
   const thirdPartySchedules = state.thirdPartyPaymentSchedules.filter((item) => thirdPartyScheduleIds.has(Number(item.project_third_party_id)));
   const documents = state.projectDocuments.filter((item) => Number(item.project_id) === Number(project.id));
   const communicationNotes = state.communicationNotes.filter((item) => Number(item.project_id) === Number(project.id));
   const wipUpdates = state.wipUpdates.filter((item) => Number(item.project_id) === Number(project.id));
   return `
-    <div class="panel selected-project">
+    <div class="panel selected-project ${isClosedStatus(project.status) ? "project-closed-panel" : ""}">
       <div class="panel-head">
         <div>
           <h2>${esc(project.project_no)} - ${esc(project.name)}</h2>
@@ -768,6 +794,7 @@ function renderSelectedProject(project, finance) {
           <button onclick="openCommunicationNoteForm(null, ${project.id}, 'Customer')">Customer Note</button>
           <button onclick="openCommunicationNoteForm(null, ${project.id}, 'Third Party')">3rd Party Note</button>
           <button onclick="openProjectDocumentForm(null, ${project.id})">Upload Document</button>
+          ${projectStatusActionButton(project)}
         </div>
       </div>
       <div class="detail-grid">
@@ -810,6 +837,7 @@ function renderSelectedProject(project, finance) {
             { label: "Reference", key: "reference_no" },
             { label: "Amount", money: true, render: (r) => rupees(r.amount) },
             { label: "Notes", key: "notes" },
+            { label: "Action", render: (r) => `<div class="row-actions"><button onclick="openReceiptForm(${project.id}, ${r.id})">Modify</button><button class="danger" onclick="deleteRecord('receipts', ${r.id})">Delete</button></div>` },
           ], filteredReceipts)}
           <div class="panel-head compact"><h3>Customer Payment Schedule</h3><button onclick="openCustomerScheduleForm(null, ${project.id})">Add</button></div>
           ${table([
@@ -856,6 +884,18 @@ function renderSelectedProject(project, finance) {
           { label: "Status", key: "status" },
           { label: "Action", render: (r) => `<button onclick="openThirdPartyScheduleForm(${r.id})">Modify</button><button class="danger" onclick="deleteRecord('third-party-payment-schedules', ${r.id})">Delete</button>` },
         ], thirdPartySchedules)}
+      </div>
+      <div style="margin-top:14px">
+        <div class="panel-head compact"><h3>Third-Party Payment Given Details</h3><button onclick="openThirdPartyPaymentForm(${project.id})">Add Payment</button></div>
+        ${table([
+          { label: "Date", key: "payment_date" },
+          { label: "3rd Party Account", render: (r) => projectThirdPartyName(r.project_third_party_id) },
+          { label: "Mode", key: "mode" },
+          { label: "Reference", key: "reference_no" },
+          { label: "Amount", money: true, render: (r) => rupees(r.amount) },
+          { label: "Notes", key: "notes" },
+          { label: "Action", render: (r) => `<div class="row-actions"><button onclick="openThirdPartyPaymentForm(${project.id}, ${r.id})">Modify</button><button class="danger" onclick="deleteRecord('third-party-payments', ${r.id})">Delete</button></div>` },
+        ], thirdPartyPayments)}
       </div>
       <div style="margin-top:14px">
         <div class="panel-head compact"><h3>Communication Notes</h3><div class="actions"><button onclick="openCommunicationNoteForm(null, ${project.id}, 'Customer')">Customer Note</button><button onclick="openCommunicationNoteForm(null, ${project.id}, 'Third Party')">3rd Party Note</button></div></div>
@@ -1896,15 +1936,19 @@ function openSettingsForm() {
 
 function openRestoreForm() {
   openModal("Restore Backup", formShell([
-    formSection("Select Backup ZIP", [
-      field("backup_file", "Backup File", "file", ""),
+    formSection("Select Backup File", [
+      field("backup_file", "Backup ZIP / Database DB File", "file", ""),
     ]),
     formSection("Important", [
-      `<div class="full restore-warning">Restore will replace current accounts data and uploaded files. The app will create a safety backup first.</div>`,
+      `<div class="full restore-warning">Restore accepts Team Brother backup ZIP or brothers_project_accounts.db. It will replace current accounts data and create a safety backup first.</div>`,
     ]),
   ].join("")), async (payload) => {
     if (!confirm("Restore backup now? Current data will be replaced after creating a safety backup.")) return;
     const result = await api("/api/restore", { method: "POST", body: JSON.stringify(payload) });
+    if (result.pending_restart) {
+      alert(`${result.message}\n\nStep 1: Close this app window/server.\nStep 2: Start the app again.\nStep 3: The restore will apply automatically.`);
+      return;
+    }
     alert(`Restore completed. Safety backup: ${result.safety_backup}`);
   });
 }
@@ -1969,6 +2013,7 @@ async function openLedger(projectId, ledgerType = "combined") {
         { label: "Reference", key: "reference_no" },
         { label: "Amount", money: true, render: (r) => rupees(r.amount) },
         { label: "Notes", key: "notes" },
+        { label: "Action", render: (r) => `<div class="row-actions"><button onclick="openReceiptForm(${projectId}, ${r.id})" type="button">Modify</button><button class="danger" onclick="deleteRecord('receipts', ${r.id})" type="button">Delete</button></div>` },
       ], receiptsInRange)}</div>` : ""}
       ${showCustomer ? `<div class="panel"><div class="panel-head compact"><h3>Customer Payment Schedule</h3><button onclick="downloadPdf('/api/reports/project-ledger.pdf?project_id=${projectId}', 'project-ledger-${projectId}.pdf')" type="button">Print</button></div>${table([
         { label: "Milestone", key: "milestone" },
@@ -1976,6 +2021,7 @@ async function openLedger(projectId, ledgerType = "combined") {
         { label: "Schedule", money: true, render: (r) => rupees(r.scheduled_amount) },
         { label: "Actual Received", money: true, render: (r) => rupees(r.actual_received) },
         { label: "Status", key: "status" },
+        { label: "Action", render: (r) => `<div class="row-actions"><button onclick="openCustomerScheduleForm(${r.id}, ${projectId})" type="button">Modify</button><button class="danger" onclick="deleteRecord('customer-payment-schedules', ${r.id})" type="button">Delete</button></div>` },
       ], ledger.customerPaymentSchedules)}</div>` : ""}
       ${showThirdParty ? `<div class="panel"><div class="panel-head compact"><h3>Third-Party Accounts</h3><button onclick="downloadPdf('/api/reports/project-ledger.pdf?project_id=${projectId}', 'project-ledger-${projectId}.pdf')" type="button">Print</button></div>${table([
         { label: "Name", key: "name" },
@@ -1986,6 +2032,15 @@ async function openLedger(projectId, ledgerType = "combined") {
         { label: "Later Paid", money: true, render: (r) => rupees(projectThirdPartyPaidTotal(r.id)) },
         { label: "Balance", money: true, render: (r) => rupees(r.balance) },
       ], ledger.thirdParties)}</div>` : ""}
+      ${showThirdParty ? `<div class="panel"><div class="panel-head compact"><h3>Third-Party Payment Given Details</h3><button onclick="openThirdPartyPaymentForm(${projectId})" type="button">Add Payment</button></div>${table([
+        { label: "Date", key: "payment_date" },
+        { label: "Third Party", key: "third_party_name" },
+        { label: "Mode", key: "mode" },
+        { label: "Reference", key: "reference_no" },
+        { label: "Amount", money: true, render: (r) => rupees(r.amount) },
+        { label: "Notes", key: "notes" },
+        { label: "Action", render: (r) => `<div class="row-actions"><button onclick="openThirdPartyPaymentForm(${projectId}, ${r.id})" type="button">Modify</button><button class="danger" onclick="deleteRecord('third-party-payments', ${r.id})" type="button">Delete</button></div>` },
+      ], ledger.thirdPartyPayments)}</div>` : ""}
       ${showThirdParty ? `<div class="panel"><div class="panel-head compact"><h3>Third-Party Payment Schedule</h3><button onclick="downloadPdf('/api/reports/project-ledger.pdf?project_id=${projectId}', 'project-ledger-${projectId}.pdf')" type="button">Print</button></div>${table([
         { label: "Third Party", key: "third_party_name" },
         { label: "Milestone", key: "milestone" },
@@ -1993,6 +2048,7 @@ async function openLedger(projectId, ledgerType = "combined") {
         { label: "Schedule", money: true, render: (r) => rupees(r.scheduled_amount) },
         { label: "Actual Paid", money: true, render: (r) => rupees(r.actual_paid) },
         { label: "Status", key: "status" },
+        { label: "Action", render: (r) => `<div class="row-actions"><button onclick="openThirdPartyScheduleForm(${r.id})" type="button">Modify</button><button class="danger" onclick="deleteRecord('third-party-payment-schedules', ${r.id})" type="button">Delete</button></div>` },
       ], ledger.thirdPartyPaymentSchedules)}</div>` : ""}
       <div class="panel"><h3>Documents</h3>${table([
         { label: "Document", key: "document_no" },
@@ -2018,6 +2074,23 @@ async function save(resource, id, payload) {
     method: id ? "PUT" : "POST",
     body: JSON.stringify(payload),
   });
+}
+
+async function setProjectStatus(id, status) {
+  const project = state.projects.find((item) => Number(item.id) === Number(id));
+  if (!project) return;
+  const message = status === "Closed" ? "Mark this project as closed?" : "Reopen this project for future work?";
+  if (!confirm(message)) return;
+  try {
+    await save("projects", id, { ...project, status });
+    if (Number(selectedProjectId) === Number(id)) selectedProjectId = null;
+    if (Number(dashboardSelectedProjectId) === Number(id)) dashboardSelectedProjectId = null;
+    dashboardProjectFilter = status === "Closed" ? "closed" : "active";
+    projectStatusFilter = status === "Closed" ? "closed" : "active";
+    await load();
+  } catch (error) {
+    alert(error.message || "Could not update project status.");
+  }
 }
 
 async function deleteRecord(resource, id, message = "Delete this record?") {
