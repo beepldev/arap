@@ -39,4 +39,8 @@ entry: server.py
 # os.environ.get("PORT", "8789") — see server.py's __main__ block.
 port: 8789
 proxy:
-  host: arap.internal
+  host: arap.brothersequipment.in
+  # HTTPS via a per-app Let's Encrypt cert. host must be a real public domain
+  # (e.g. my-app.example.com) whose DNS points at this server, with port 80 open.
+  ssl:
+    email: admin@brothersequipment.in
